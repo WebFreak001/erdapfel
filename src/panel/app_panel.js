@@ -5,6 +5,7 @@ import Panel from '../libs/panel';
 import FavoritesPanel from './favorites/FavoritesPanel';
 import PoiPanel from './poi_panel';
 import ServicePanel from './ServicePanel';
+import EventList from './EventList';
 import SearchInput from '../ui_components/search_input';
 import TopBar from './top_bar';
 import MasqFavoriteModal from '../modals/masq_favorite_modal';
@@ -28,18 +29,21 @@ const performanceEnabled = nconf.get().performance.enabled;
 const directionEnabled = nconf.get().direction.enabled;
 const masqEnabled = nconf.get().masq.enabled;
 const categoryEnabled = nconf.get().category.enabled;
+const eventEnabled = nconf.get().events.enabled;
 
 export default class AppPanel {
   constructor(parent) {
     this.topBar = new TopBar();
     SearchInput.initSearchInput('#search');
     this.categoryEnabled = categoryEnabled;
+    this.eventEnabled = eventEnabled;
     this.directionEnabled = directionEnabled;
 
     this.servicePanel = new ReactPanelWrapper(ServicePanel);
     this.favoritePanel = new ReactPanelWrapper(FavoritesPanel);
     this.poiPanel = new PoiPanel();
     this.categoryPanel = this.categoryEnabled ? new CategoryPanel() : null;
+    this.eventListPanel = this.eventEnabled ? new EventList() : null;
     this.directionPanel = this.directionEnabled ? new DirectionPanel() : null;
 
     this.panels = [
@@ -49,6 +53,9 @@ export default class AppPanel {
     ];
     if (this.categoryEnabled) {
       this.panels.push(this.categoryPanel);
+    }
+    if (this.eventEnabled) {
+      this.panels.push(this.eventListPanel);
     }
     if (this.directionPanel) {
       this.panels.push(this.directionPanel);
