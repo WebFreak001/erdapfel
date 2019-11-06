@@ -5,7 +5,7 @@ import Panel from '../libs/panel';
 import FavoritesPanel from './favorites/FavoritesPanel';
 import PoiPanel from './poi_panel';
 import ServicePanel from './ServicePanel';
-import EventList from './EventList';
+import EventListPanel from './EventListPanel';
 import SearchInput from '../ui_components/search_input';
 import TopBar from './top_bar';
 import MasqFavoriteModal from '../modals/masq_favorite_modal';
@@ -43,7 +43,7 @@ export default class AppPanel {
     this.favoritePanel = new ReactPanelWrapper(FavoritesPanel);
     this.poiPanel = new PoiPanel();
     this.categoryPanel = this.categoryEnabled ? new CategoryPanel() : null;
-    this.eventListPanel = this.eventEnabled ? new EventList() : null;
+    this.eventListPanel = this.eventEnabled ? new ReactPanelWrapper(EventListPanel) : null;
     this.directionPanel = this.directionEnabled ? new DirectionPanel() : null;
 
     this.panels = [
@@ -103,6 +103,12 @@ export default class AppPanel {
     this.router.addRoute('Category', '/places/(.*)', placesParams => {
       window.execOnMapLoaded(() => {
         this.openCategory(parseQueryString(placesParams));
+      });
+    });
+
+    this.router.addRoute('EventListPanel', '/events/(.*)', eventsParams => {
+      window.execOnMapLoaded(() => {
+        this.openEvents(parseQueryString(eventsParams));
       });
     });
 
@@ -262,7 +268,7 @@ export default class AppPanel {
     this.activePoiId = null;
     this.panels
       .filter(panel => panel !== panelToOpen)
-      .forEach(panel => { panel.close(); });
+      .forEach(panel => { if (panel.close) panel.close(); });
     panelToOpen.open(options);
   }
 
@@ -281,6 +287,14 @@ export default class AppPanel {
       category: CategoryService.getCategoryByName(categoryName),
       ...otherOptions,
     });
+  }
+
+  openEvents(params) {
+    //const { type: eventName, ...otherOptions } = params;
+    this._openPanel(this.eventListPanel, /*{
+      event: EventsService.getEventByName(eventName),
+      ...otherOptions,
+    }*/);
   }
 
   resetLayout() {
